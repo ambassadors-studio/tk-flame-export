@@ -14,6 +14,14 @@ from sgtk import TankError
 import sgtk
 
 
+def __chunks(value, chunk_size):
+    """
+    Splits a list into chunks.
+    """
+    for i in range(0, len(value), chunk_size):
+        yield value[i:i + chunk_size]
+
+
 class Sequence(object):
     """
     Class representing a sequence in Shotgun/Flame
@@ -451,7 +459,13 @@ class Sequence(object):
             self._app.engine.show_busy("Preparing Shotgun...", "Creating new shots...")
 
             self._app.log_debug("Executing sg batch command....")
-            sg_batch_response = self._app.shotgun.batch(sg_batch_data)
+            # We probably have to cut this into chunks
+            chunk_size = 20
+            sg_batch_response = []
+
+            for sg_data_chunk in __chunks(sg_batch_data, chunk_size):
+                self._app.log_debug(pprint.pformat(sg_data_chunk))
+                sg_batch_response.extend(self._app.shotgun.batch(sg_data_chunk))
             self._app.log_debug("...done!")
 
             # register its data with Shot objects
