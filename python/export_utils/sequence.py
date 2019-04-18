@@ -1,11 +1,11 @@
 # Copyright (c) 2016 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import pprint
@@ -14,7 +14,7 @@ from sgtk import TankError
 import sgtk
 
 
-def __chunks(value, chunk_size):
+def _chunks(value, chunk_size):
     """
     Splits a list into chunks.
     """
@@ -82,7 +82,6 @@ class Sequence(object):
         """
         return [shot for shot in self.shots if len(shot.segments) > 0]
 
-
     def add_shot(self, shot_name):
         """
         Adds a shot to this sequence.
@@ -134,7 +133,7 @@ class Sequence(object):
             self._app.log_debug("Creating folders on for all new shots...")
             for (idx, shot) in enumerate(new_shots):
                 # this is a new shot
-                msg = "Step %s/%s: Creating folders for Shot %s..." % (idx+1, len(new_shots), shot.name)
+                msg = "Step %s/%s: Creating folders for Shot %s..." % (idx + 1, len(new_shots), shot.name)
                 self._app.engine.show_busy("Preparing Shotgun...", msg)
                 self._app.log_debug("Creating folders on disk for Shot id %s..." % shot)
                 self._app.sgtk.create_filesystem_structure(
@@ -396,7 +395,6 @@ class Sequence(object):
             self._shotgun_id = sg_parent["id"]
             self._app.log_debug("Created parent %s" % sg_parent)
 
-
         # Locate a task template for shots
         if shot_task_template:
             # resolve task template
@@ -463,7 +461,7 @@ class Sequence(object):
             chunk_size = 20
             sg_batch_response = []
 
-            for sg_data_chunk in __chunks(sg_batch_data, chunk_size):
+            for sg_data_chunk in _chunks(sg_batch_data, chunk_size):
                 self._app.log_debug(pprint.pformat(sg_data_chunk))
                 sg_batch_response.extend(self._app.shotgun.batch(sg_data_chunk))
             self._app.log_debug("...done!")
@@ -472,5 +470,3 @@ class Sequence(object):
             for sg_data in sg_batch_response:
                 shot_name = sg_data["code"]
                 self._shots[shot_name].set_sg_data(sg_data, True)
-
-
